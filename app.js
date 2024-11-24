@@ -65,18 +65,7 @@ function dragOver(e){
     e.preventDefault()
     
 }
-// function dragDrop(e){
-//     e.stopPropagation()
-//     const targetSquare = e.target.classList.contains('square') 
-//         ? e.target 
-//         : e.target.parentNode
-//     console.log(targetSquare.classList)
-//     const targetPiece = targetSquare.querySelector('.piece')
-//     console.log(targetPiece.classList)
-//     targetSquare.removeChild(targetPiece)
-//     targetSquare.appendChild(draggedElement)
 
-// }
 function dragDrop(e){
     e.stopPropagation()
     
@@ -104,7 +93,9 @@ function dragDrop(e){
         if (takenByOpponent && valid ) {
             targetSquare.removeChild(targetPiece)
             targetSquare.appendChild(draggedElement)
+           // checkForWin()
             changeplayer()
+             checkForWin()
             return
         }
         
@@ -115,7 +106,9 @@ function dragDrop(e){
         
         if (valid && !taken) {
             targetSquare.appendChild(draggedElement)
+          
             changeplayer()
+             checkForWin()
         }
     }
 }
@@ -254,7 +247,7 @@ function checkIfValid(target){
         
                     // Boundary chec
                     if (nextPos < 0 || nextPos >= 64) {
-                        console.log("Out of board boundaries.");
+                        
                         break;
                     }
         
@@ -266,7 +259,7 @@ function checkIfValid(target){
         
                     const nextSquare = document.querySelector(`[square-id="${nextPos}"]`);
                     if (!nextSquare) {
-                        console.log("No square found at this position.");
+                        ;
                         break;
                     }
         
@@ -346,6 +339,7 @@ function checkIfValid(target){
     
 }
 function changeplayer(){
+    
     if(playergo==='black'){ 
         reverseId()
         playergo='white'
@@ -370,4 +364,36 @@ function revertId(){
     allSquares.forEach((square,i)=>{
         square.setAttribute('square-id',i )
     })
+}
+function checkForWin() {
+    const kings = document.querySelectorAll('#king'); // Select both kings using the id
+    const infoDisplay = document.querySelector('#info-about');
+    const whiteKing = Array.from(kings).find(king => king.classList.contains('white')); // Find the white king
+    const blackKing = Array.from(kings).find(king => king.classList.contains('black')); // Find the black king
+    console.log(whiteKing)
+    console.log(blackKing)
+    if (!whiteKing) { // If no white king exists
+        infoDisplay.textContent = 'Black wins!';
+        endGame();
+    }
+    
+    if (!blackKing) { // If no black king exists
+        infoDisplay.textContent = 'White wins!';
+        endGame();
+    }
+}
+
+function endGame() {
+    const allSquares = document.querySelectorAll(".square");
+   
+    
+    // Set the player text to GAME OVER
+    player.textContent = 'GAME OVER';
+    allSquares.forEach(square => {
+        square.firstChild?.setAttribute("draggable", false); // Disable further dragging
+   
+    square.removeEventListener('dragstart', dragStart);
+        square.removeEventListener('dragover', dragOver);
+        square.removeEventListener('drop', dragDrop); });
+    
 }
